@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "dgSpecHash": "OOb+QJeWZ2Og0q4b303MkLp3zj+bDm5W2c+0NUIfSH3I90B14JZSD3yjaK58J2dldXE4ItKIJmhHhHG2i/Yyxw==",
+  "success": true,
+  "projectFilePath": "C:\\schneider\\DocOperator\\DocOperator\\DocOperator.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\matteo\\.nuget\\packages\\freesql\\2.6.100\\freesql.2.6.100.nupkg.sha512",
+    "C:\\Users\\matteo\\.nuget\\packages\\freesql.provider.sqlserver\\2.6.100\\freesql.provider.sqlserver.2.6.100.nupkg.sha512",
+    "C:\\Users\\matteo\\.nuget\\packages\\ini-parser\\2.5.2\\ini-parser.2.5.2.nupkg.sha512",
+    "C:\\Users\\matteo\\.nuget\\packages\\serilog\\2.10.0\\serilog.2.10.0.nupkg.sha512",
+    "C:\\Users\\matteo\\.nuget\\packages\\serilog.sinks.file\\5.0.0\\serilog.sinks.file.5.0.0.nupkg.sha512",
+    "C:\\Users\\matteo\\.nuget\\packages\\system.data.sqlclient\\4.8.2\\system.data.sqlclient.4.8.2.nupkg.sha512"
+  ],
+  "logs": []
+}
