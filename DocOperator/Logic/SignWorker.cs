@@ -3,54 +3,88 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
 using DocOperator.Model;
 using DocOperator.Common;
 using DocOperator.OfficeOper;
-using System.Threading;
+using DocOperator.Vo;
+using Newtonsoft.Json;
+
+
 
 namespace DocOperator.Logic
 {
-    class SignWorker
+    class SignWorker : Worker
     {
         public void StartUp()
         {
-            DbOper dbOper = new DbOper();
-            string configFile = Utility.getExePath() + "config.ini";
-            CfgInfo cfgInfo = new CfgInfo(configFile);
-            string projetDir = cfgInfo.GetProjectDir();
-            int waitTime = 15 * 1000;
-
             for (;;)
             {
-                List<File> fileList = dbOper.GetPendingTask();              
-                foreach (var file in fileList)
+                var docList = dbOper.GetSignTask();
+                foreach (var doc in docList)
                 {
-                    if (convertFile(projetDir +  file.path))
-                    {
-                        dbOper.SetDocumentConverted(file.documentId);
-                    }
+                    // 取出审批信息
+                    SignConfig cfg = initSignConfig(doc.sign);
+                    if (!setSignConfig(cfg, doc))
+                        continue;
+
+                    WordSigner.Sign(doc.id, cfg);
+
+
                 }
 
                 Thread.Sleep(waitTime);     // 避免失败文件循环 
             }
         }
 
-
-        private bool convertFile(string srcFile)
+        private SignConfig initSignConfig(string signStr)
         {
-            srcFile = srcFile.Replace('/', '\\');
-            if (!System.IO.File.Exists(srcFile))
+            SignConfig cfg = JsonConvert.DeserializeObject<SignConfig>(signStr);
+
+            return cfg;
+        }
+
+        private bool setSignConfig(SignConfig cfg, dynamic doc)
+        {
+            cfg.srcPath = (projectDir + doc.path).Replace('/', '\\');
+            cfg.destPath = cfg.srcPath;
+            cfg.version = doc.version;
+
+            cfg.issueAt.date = doc.issued_at;
+
+            return setHomepage(cfg, doc) && setMultiReviewers(cfg, doc);
+
+        }
+
+        private bool setHomepage(SignConfig cfg, dynamic doc)
+        {
+            List<Reviewer> reviewers =
+                dbOper.GetDocReviewers(doc.current_instance_id, FlowNode.SINGLE);
+
+            if (reviewers.Count != cfg.homepage.reviewers.Count)
             {
                 return false;
             }
 
-            int pos = srcFile.LastIndexOf('.');
-            if (pos <= 0)
-                return false;
+            for (int i=0; i<reviewers.Count; i++)
+            {
+                cfg.homepage.reviewers[i].signature = 
+                    (projectDir + reviewers[i].signature).Replace('/', '\\');
+                cfg.homepage.reviewers[i].date = reviewers[i].date;
+            }
 
-            string destFile = srcFile.Substring(0, pos) + ".pdf";
-            return WordOper.WordToPDF(srcFile, destFile);
+            return true;
         }
+
+        private bool setMultiReviewers(SignConfig cfg, dynamic doc)
+        {
+            List<Reviewer> reviewers =
+                dbOper.GetDocReviewers(doc.current_instance_id, FlowNode.MULTI);
+
+            cfg.multiReviewers.reviewers = reviewers;
+            return true;
+        }
+
 
 
     }

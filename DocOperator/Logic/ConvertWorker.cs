@@ -10,24 +10,18 @@ using System.Threading;
 
 namespace DocOperator.Logic
 {
-    class ConvertWorker
+    class ConvertWorker : Worker
     {
         public void StartUp()
         {
-            DbOper dbOper = new DbOper();
-            string configFile = Utility.getExePath() + "config.ini";
-            CfgInfo cfgInfo = new CfgInfo(configFile);
-            string projetDir = cfgInfo.GetProjectDir();
-            int waitTime = 15 * 1000;
-
             for (;;)
             {
-                List<File> fileList = dbOper.GetPendingTask();              
-                foreach (var file in fileList)
+                var docList = dbOper.GetConvertTask();
+                foreach (var doc in docList)
                 {
-                    if (convertFile(projetDir +  file.path))
+                    if (convertFile(projectDir +  doc.path))
                     {
-                        dbOper.SetDocumentConverted(file.documentId);
+                        dbOper.SetDocumentStep(doc.id, doc.step + 1);
                     }
                 }
 
@@ -49,7 +43,7 @@ namespace DocOperator.Logic
                 return false;
 
             string destFile = srcFile.Substring(0, pos) + ".pdf";
-            return WordOper.WordToPDF(srcFile, destFile);
+            return WordConverter.ToPDF(srcFile, destFile);
         }
 
 

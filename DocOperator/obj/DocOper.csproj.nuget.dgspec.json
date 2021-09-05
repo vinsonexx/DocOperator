@@ -1,15 +1,15 @@
 {
   "format": 1,
   "restore": {
-    "C:\\schneider\\DocOperator\\DocOperator\\DocOperator.csproj": {}
+    "C:\\schneider\\DocOperator\\DocOperator\\DocOper.csproj": {}
   },
   "projects": {
-    "C:\\schneider\\DocOperator\\DocOperator\\DocOperator.csproj": {
+    "C:\\schneider\\DocOperator\\DocOperator\\DocOper.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\schneider\\DocOperator\\DocOperator\\DocOperator.csproj",
-        "projectName": "DocOperator",
-        "projectPath": "C:\\schneider\\DocOperator\\DocOperator\\DocOperator.csproj",
+        "projectUniqueName": "C:\\schneider\\DocOperator\\DocOperator\\DocOper.csproj",
+        "projectName": "DocOper",
+        "projectPath": "C:\\schneider\\DocOperator\\DocOperator\\DocOper.csproj",
         "packagesPath": "C:\\Users\\matteo\\.nuget\\packages\\",
         "outputPath": "C:\\schneider\\DocOperator\\DocOperator\\obj\\",
         "projectStyle": "PackageReference",
@@ -51,10 +51,6 @@
             "FreeSql.Provider.SqlServer": {
               "target": "Package",
               "version": "[2.6.100, )"
-            },
-            "Newtonsoft.Json": {
-              "target": "Package",
-              "version": "[13.0.1, )"
             },
             "Serilog": {
               "target": "Package",

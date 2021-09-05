@@ -12,13 +12,19 @@ namespace DocOperator.Model
     public class Document
     {
         public const int ST_PENDING = 0;        // 待发起
-                                                //  public const int ST_CODE = 1;           // 文档分配代码
+        //public const int ST_CODE = 1;           // 文档分配代码
         public const int ST_WK_REVIEWING = 2;   // 待文控检查格式，发起审核
         public const int ST_WK_REJECTED = 3;    // 文控审核格式不通过
         public const int ST_REVIEWING = 4;      // 审批中
         public const int ST_REJECTED = 5;       // 审批失败
         public const int ST_ISSUED = 6;         // 已发布
-        public const int ST_OTHER = 6;          // 除了发布以外的状态
+        public const int ST_OTHER = 7;          // 除了发布以外的状态
+
+        public const int STEP_PENDING = 0;      // 初始上传
+        public const int STEP_INITPDF = 1;      // 生成未审批PDF
+        public const int STEP_SIGNED = 2;       // 签名成功（待生成PDF）
+        public const int STEP_DONE = 3;         // 生成最终PDF
+        public const int STEP_FAILED = 10;      // 10失败
 
         [Column(IsIdentity = true, IsPrimary = true)]
         public int id { get; set; }
@@ -43,7 +49,7 @@ namespace DocOperator.Model
         public int status { get; set; }
 
         public int is_distributed { get; set; }
-        public int is_converted { get; set; }
+        public int step { get; set; }
 
         public DateTime created_at { get; set; }
 

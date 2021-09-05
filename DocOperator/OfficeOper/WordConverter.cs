@@ -6,9 +6,9 @@ using Serilog;
 
 namespace DocOperator.OfficeOper
 {
-    class WordOper
+    class WordConverter
     {
-        static public bool WordToPDF(string sourcePath, string targetPath)
+        static public bool ToPDF(string sourcePath, string targetPath)
         {
             bool result = false;
             Microsoft.Office.Interop.Word.Application application = new Microsoft.Office.Interop.Word.Application();
