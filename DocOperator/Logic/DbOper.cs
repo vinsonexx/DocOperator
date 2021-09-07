@@ -23,6 +23,7 @@ namespace DocOperator.Logic
             return fsql.Select<Document, File>()
                 .LeftJoin((a, b) => a.id == b.documentId && a.version == b.version)
                 .Where((a, b) => a.step == Document.STEP_PENDING || a.step == Document.STEP_SIGNED)
+                .Where((a, b) => a.category_id != 4)
                 .ToList((a, b) => new { 
                     a.id,
                     a.step,
@@ -41,19 +42,22 @@ namespace DocOperator.Logic
 
         public dynamic GetSignTask()
         {
-            return fsql.Select<Document, File, Category>()
-                .LeftJoin((a, b, c) => a.id == b.documentId && a.version == b.version)
-                .LeftJoin((a, b, c) => a.category_id == c.id)
-                .Where((a, b, c) => a.status == Document.ST_ISSUED)
-                .Where((a, b, c) => a.step != Document.STEP_SIGNED)
-                .ToList((a, b, c) => new { 
+            return fsql.Select<Document, File, Category, UserInfo>()
+                .LeftJoin((a, b, c, d) => a.id == b.documentId && a.version == b.version)
+                .LeftJoin((a, b, c, d) => a.category_id == c.id)
+                .LeftJoin((a, b, c, d) => a.author_user_id == d.user_id)
+                .Where((a, b, c, d) => a.status == Document.ST_ISSUED)
+                .Where((a, b, c, d) => a.step == Document.STEP_INITPDF)
+                .ToList((a, b, c, d) => new { 
                     id = a.id,
                     current_instance_id = a.current_instance_id,
                     version = a.version,
                     applied_at = ((DateTime)a.applied_at).ToString("yyyy-MM-dd"),
                     issued_at = ((DateTime)a.issued_at).ToString("yyyy-MM-dd"),
                     path = b.path,
-                    sign = c.sign
+                    sign = c.sign,
+                    signature = d.signature,
+                    step = a.step
                 });
         }
 

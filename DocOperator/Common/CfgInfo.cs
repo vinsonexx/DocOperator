@@ -34,7 +34,19 @@ namespace DocOperator.Common
             return data[section]["ProjectDir"];
         }
 
+        public int GetWaitTime()
+        {
+            var parser = new FileIniDataParser();
+            IniData data = parser.ReadFile(cfgFile);
 
+            int val = Int32.Parse(data[section]["WaitTime"]);
+            if (val >30 || val <5)
+            {
+                val = 20;
+            }
+
+            return val;
+        }
 
 
 

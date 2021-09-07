@@ -24,16 +24,21 @@ namespace DocOperator.Common
 
         public static string RunCmd(string exe, string param, int milliseconds)
         {
-            System.Diagnostics.Process p = new System.Diagnostics.Process();
+            if (!File.Exists(exe))
+            {
+                return "error";
+            }
 
-            p.StartInfo.FileName = exe;                 // 程序名    
-            p.StartInfo.Arguments = " " + param;        // 参数   
-            p.StartInfo.UseShellExecute = false;        // 关闭Shell的使用    
-            p.StartInfo.RedirectStandardInput = true;   // 重定向标准輸入    
-            p.StartInfo.RedirectStandardOutput = true;  // 重定向标准輸出    
-            p.StartInfo.RedirectStandardError = true;   // 重定向错误輸出    
-            p.StartInfo.CreateNoWindow = true;          // 不显示窗口    
+            Process p = new Process();
 
+            p.StartInfo.FileName = exe;                 // 程序名
+            p.StartInfo.Arguments = param;              // 参数
+            p.StartInfo.UseShellExecute = false;        // 关闭Shell的使用
+            p.StartInfo.RedirectStandardInput = true;   // 重定向标准輸入
+            p.StartInfo.RedirectStandardOutput = true;  // 重定向标准輸出
+            p.StartInfo.RedirectStandardError = true;   // 重定向错误輸出
+            p.StartInfo.CreateNoWindow = true;          // 不显示窗口
+                                                        
             p.Start();  // 启动
             p.WaitForExit(milliseconds);
 
@@ -43,7 +48,8 @@ namespace DocOperator.Common
         public static string GetBackupFilePath(string srcFilePath)
         {
             string ext = Path.GetExtension(srcFilePath);
-            return srcFilePath.Substring(0, srcFilePath.Length - ext.Length) + "_bk" + ext;
+            return srcFilePath.Substring(0, srcFilePath.Length - ext.Length) + 
+                "_bk" + ext;
         }
 
 

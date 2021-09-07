@@ -17,8 +17,9 @@ namespace DocOperator.OfficeOper
         // 生成JSON文件，并调用Python程序
         static public bool Sign(int docId, SignConfig config)
         {
-            System.IO.File.Copy(config.srcPath,
-                Utility.GetBackupFilePath(config.srcPath), true);
+            string backupFile = Utility.GetBackupFilePath(config.srcPath);
+            System.IO.File.Copy(config.srcPath, backupFile, true);
+            config.srcPath = backupFile;
 
             // 生成json文件
             string jsonStr = JsonConvert.SerializeObject(config);
@@ -28,17 +29,23 @@ namespace DocOperator.OfficeOper
             writeJsonFile(jsonFile, jsonStr);
 
             string exe = Utility.getExePath() + "WordOper.exe";
-            string result = Utility.RunCmd(exe, jsonFile, 30 * 1000);
+            string result = Utility.RunCmd(exe, "\"" + jsonFile + "\"", 30 * 1000);
+
+            if (result.Length >= 4 && 
+                result.Substring(result.Length - 4, 2) == "ok")
+            {
+                return true;
+            }
 
             Log.Information(result);
-            return true;
+            return false;
         }
 
         static private void writeJsonFile(string path, string jsonConents)
         {
-            using (FileStream fs = new FileStream(path, FileMode.OpenOrCreate, System.IO.FileAccess.ReadWrite, FileShare.ReadWrite))
+            using (FileStream fs = new FileStream(path, FileMode.Create, FileAccess.Write))
             {
-                using (StreamWriter sw = new StreamWriter(fs, Encoding.UTF8))
+                using (StreamWriter sw = new StreamWriter(fs, new UTF8Encoding(false)))
                 {
                     sw.WriteLine(jsonConents);
                 }

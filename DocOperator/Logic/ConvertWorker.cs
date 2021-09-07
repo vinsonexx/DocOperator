@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
+using Serilog;
 using DocOperator.Model;
 using DocOperator.Common;
 using DocOperator.OfficeOper;
-using System.Threading;
+
 
 namespace DocOperator.Logic
 {
@@ -21,7 +23,12 @@ namespace DocOperator.Logic
                 {
                     if (convertFile(projectDir +  doc.path))
                     {
+                        Log.Information(string.Format("ConvetFile({0}{1}) success. "), projectDir, doc.path);
                         dbOper.SetDocumentStep(doc.id, doc.step + 1);
+                    }
+                    else
+                    {
+                        Log.Information(string.Format("ConvetFile({0}{1}) failed. "), projectDir, doc.path);
                     }
                 }
 
@@ -38,12 +45,9 @@ namespace DocOperator.Logic
                 return false;
             }
 
-            int pos = srcFile.LastIndexOf('.');
-            if (pos <= 0)
-                return false;
-
-            string destFile = srcFile.Substring(0, pos) + ".pdf";
-            return WordConverter.ToPDF(srcFile, destFile);
+            string extFileName = System.IO.Path.GetExtension(srcFile);
+            string destFile = srcFile.Substring(0, srcFile.Length - extFileName.Length) + ".pdf";
+            return OfficeConverter.ToPDF(srcFile, destFile);
         }
 
 

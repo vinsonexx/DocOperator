@@ -11,7 +11,7 @@ namespace DocOperator.Logic
     {
         protected DbOper dbOper;
         protected string projectDir;
-        protected const int waitTime = 15 * 1000;
+        protected int waitTime;
 
         public Worker()
         {
@@ -20,6 +20,7 @@ namespace DocOperator.Logic
             string configFile = Utility.getExePath() + "config.ini";
             CfgInfo cfgInfo = new CfgInfo(configFile);
             projectDir = cfgInfo.GetProjectDir();
+            waitTime = cfgInfo.GetWaitTime();
         }
 
     }

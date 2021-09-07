@@ -9,6 +9,7 @@ using DocOperator.Common;
 using DocOperator.OfficeOper;
 using DocOperator.Vo;
 using Newtonsoft.Json;
+using Serilog;
 
 
 
@@ -23,14 +24,14 @@ namespace DocOperator.Logic
                 var docList = dbOper.GetSignTask();
                 foreach (var doc in docList)
                 {
+                    Log.Information("Doc id: " + doc.id.ToString());
                     // 取出审批信息
                     SignConfig cfg = initSignConfig(doc.sign);
                     if (!setSignConfig(cfg, doc))
                         continue;
 
-                    WordSigner.Sign(doc.id, cfg);
-
-
+                    if (WordSigner.Sign(doc.id, cfg))
+                        dbOper.SetDocumentStep(doc.id, Document.STEP_SIGNED);
                 }
 
                 Thread.Sleep(waitTime);     // 避免失败文件循环 
@@ -58,8 +59,16 @@ namespace DocOperator.Logic
 
         private bool setHomepage(SignConfig cfg, dynamic doc)
         {
+            // 编写者要取出来
             List<Reviewer> reviewers =
                 dbOper.GetDocReviewers(doc.current_instance_id, FlowNode.SINGLE);
+
+            reviewers.Insert(0, new Reviewer
+            {
+                keyword = "",
+                date = doc.applied_at,
+                signature = doc.signature
+            });
 
             if (reviewers.Count != cfg.homepage.reviewers.Count)
             {
@@ -80,6 +89,11 @@ namespace DocOperator.Logic
         {
             List<Reviewer> reviewers =
                 dbOper.GetDocReviewers(doc.current_instance_id, FlowNode.MULTI);
+
+            foreach (Reviewer r in reviewers)
+            {
+                r.signature = (projectDir + r.signature).Replace('/', '\\');
+            }
 
             cfg.multiReviewers.reviewers = reviewers;
             return true;
